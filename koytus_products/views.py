@@ -8,8 +8,7 @@ from django.shortcuts import render
 def main(request):
     products = ["Dicks", "Pussies", "Pickles", "Mangoes"]
     categories = ["Gays", "Lesbians", "Niggers", "Nikita & Ibragim"]
-    # for i in products:
-    #     print(i)
+
     return render(request, "index.html", context={"products": products, "categories": categories})
 
 
