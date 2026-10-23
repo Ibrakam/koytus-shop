@@ -19,7 +19,5 @@ from django.urls import path
 from koytus_products import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.main),
-    path("name/<str:name>/", views.dynamic_url)
+    path('admin/', admin.site.urls)
 ]

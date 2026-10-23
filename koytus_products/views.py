@@ -5,15 +5,15 @@ from django.shortcuts import render
 # def main(request):
 #     return render(request, "index.html")
 
-def main(request):
-    products = ["Dicks", "Pussies", "Pickles", "Mangoes"]
-    categories = ["Gays", "Lesbians", "Niggers", "Nikita & Ibragim"]
+# def main(request):
+#     products = ["Dicks", "Pussies", "Pickles", "Mangoes"]
+#     categories = ["Gays", "Lesbians", "Niggers", "Nikita & Ibragim"]
 
-    return render(request, "index.html", context={"products": products, "categories": categories})
-
-
+#     return render(request, "index.html", context={"products": products, "categories": categories})
 
 
-def dynamic_url(request, name):
-    return render(request, "name.html", context={"name": name})
+
+
+# def dynamic_url(request, name):
+#     return render(request, "name.html", context={"name": name})
 
