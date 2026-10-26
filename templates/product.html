@@ -1,0 +1,868 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ product.pr_name }} — KOYTUS</title>
+    <meta name="description"
+          content="{{ product.pr_descr|truncatechars:155 }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #faf7f9;
+            --white: #fff;
+            --dark: #211923;
+            --muted: #827784;
+            --accent: #a66b91;
+            --accent-dark: #8d557a;
+            --accent-light: #f0e2ec;
+            --border: #eee7ed;
+            --radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(1160px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        /* Announcement */
+
+        .announcement {
+            background: var(--dark);
+            color: #f8edf5;
+            text-align: center;
+            padding: 9px 15px;
+            font-size: 11px;
+            letter-spacing: .5px;
+        }
+
+        /* Header */
+
+        .header {
+            background: rgba(255, 255, 255, .95);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-inner {
+            min-height: 76px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+            font-size: 13px;
+            color: #665968;
+        }
+
+        .nav a:hover {
+            color: var(--accent);
+        }
+
+        .cart-link {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Breadcrumbs */
+
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin: 28px 0;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .breadcrumb .current {
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        /* Product layout */
+
+        .product-layout {
+            display: grid;
+            grid-template-columns: 1.05fr 1fr;
+            align-items: start;
+            gap: 55px;
+            margin-bottom: 80px;
+        }
+
+        /* Image */
+
+        .gallery {
+            min-width: 0;
+        }
+
+        .main-image {
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            aspect-ratio: 4 / 4.5;
+            border-radius: 25px;
+            background: linear-gradient(145deg, #f5edf3, #e9dce8);
+            border: 1px solid var(--border);
+        }
+
+        .main-image img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+        .image-placeholder {
+            color: #b89ab0;
+            font-size: 70px;
+        }
+
+        .image-label {
+            position: absolute;
+            left: 18px;
+            top: 18px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 9px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .4px;
+        }
+
+        .gallery-caption {
+            margin-top: 13px;
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        /* Product info */
+
+        .product-info {
+            padding-top: 10px;
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+        }
+
+        .product-title {
+            font-size: clamp(29px, 4vw, 43px);
+            line-height: 1.2;
+            letter-spacing: -1.5px;
+            margin: 13px 0 17px;
+            overflow-wrap: anywhere;
+        }
+
+        .stock-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 22px;
+        }
+
+        .stock-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #31966b;
+        }
+
+        .stock-status.out-of-stock {
+            color: #a14d59;
+        }
+
+        .stock-status.out-of-stock .stock-dot {
+            background: #c74b5b;
+        }
+
+        .price-block {
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .price {
+            font-size: 31px;
+            line-height: 1.3;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .price-note {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .description {
+            padding: 24px 0;
+        }
+
+        .description h2 {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .description p {
+            white-space: pre-line;
+            font-size: 13px;
+            line-height: 1.95;
+            color: #766b79;
+            overflow-wrap: anywhere;
+        }
+
+        .category-tag {
+            display: inline-flex;
+            margin-top: 15px;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: var(--accent-light);
+            color: var(--accent-dark);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Purchase controls */
+
+        .purchase-form {
+            padding-top: 5px;
+        }
+
+        .quantity-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .purchase-controls {
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 125px;
+            height: 52px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .quantity button {
+            width: 38px;
+            height: 100%;
+            border: 0;
+            background: transparent;
+            color: var(--dark);
+            font-size: 20px;
+        }
+
+        .quantity input {
+            width: 35px;
+            text-align: center;
+            border: 0;
+            outline: none;
+            background: transparent;
+            color: var(--dark);
+            font-size: 14px;
+            font-weight: 700;
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+
+        .quantity input::-webkit-inner-spin-button,
+        .quantity input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .add-to-cart {
+            flex: 1;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--accent);
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            transition: .2s;
+        }
+
+        .add-to-cart:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+        }
+
+        .add-to-cart:disabled {
+            background: #c8bec8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Benefits */
+
+        .product-benefits {
+            margin-top: 28px;
+            padding: 21px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            padding: 11px 0;
+        }
+
+        .benefit + .benefit {
+            border-top: 1px solid var(--border);
+        }
+
+        .benefit-icon {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            background: var(--accent-light);
+            border-radius: 10px;
+            color: var(--accent-dark);
+            font-size: 17px;
+        }
+
+        .benefit strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .benefit p {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        /* Back link */
+
+        .back-section {
+            margin-bottom: 75px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-dark);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .back-link:hover {
+            color: var(--dark);
+        }
+
+        /* Footer */
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0 22px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            padding-bottom: 28px;
+        }
+
+        .footer-description {
+            max-width: 350px;
+            color: #b8aab9;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: start;
+            gap: 20px;
+            color: #ded1df;
+            font-size: 12px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #453747;
+            padding-top: 18px;
+            color: #b8aab9;
+            font-size: 11px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        @media (max-width: 850px) {
+            .product-layout {
+                gap: 30px;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nav {
+                gap: 14px;
+            }
+
+            .price {
+                font-size: 27px;
+            }
+
+            .purchase-controls {
+                flex-direction: column;
+            }
+
+            .quantity {
+                width: 125px;
+                height: 46px;
+            }
+
+            .add-to-cart {
+                flex: none;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: calc(100% - 28px);
+            }
+
+            .header-inner {
+                min-height: 65px;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .breadcrumb {
+                margin: 20px 0;
+                font-size: 11px;
+            }
+
+            .product-layout {
+                grid-template-columns: 1fr;
+                gap: 25px;
+                margin-bottom: 50px;
+            }
+
+            .main-image {
+                aspect-ratio: 1 / 1;
+                border-radius: 20px;
+            }
+
+            .product-info {
+                padding-top: 0;
+            }
+
+            .product-title {
+                font-size: 32px;
+            }
+
+            .price {
+                font-size: 29px;
+            }
+
+            .purchase-controls {
+                flex-direction: row;
+            }
+
+            .quantity {
+                min-width: 115px;
+                width: 115px;
+                height: 52px;
+            }
+
+            .add-to-cart {
+                flex: 1;
+                width: auto;
+                font-size: 12px;
+            }
+
+            .product-benefits {
+                padding: 15px;
+            }
+
+            .footer-top {
+                flex-direction: column;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="announcement">
+        18+ · Деликатный сервис · Внимание к вашей приватности
+    </div>
+
+    <header class="header">
+        <div class="container header-inner">
+            <a href="/" class="logo">KOY<span>TUS</span></a>
+
+            <nav class="nav">
+                <a href="/">Главная</a>
+                <a href="/#categories">Категории</a>
+                <a href="/#products">Каталог</a>
+            </nav>
+
+            <a href="/cart/" class="cart-link">
+                Корзина 🛍
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <nav class="breadcrumb" aria-label="Навигация">
+            <a href="/">Главная</a>
+            <span>/</span>
+
+            <a href="/category/{{ product.pr_category.id }}/">
+                {{ product.pr_category.category_name }}
+            </a>
+
+            <span>/</span>
+            <span class="current">{{ product.pr_name }}</span>
+        </nav>
+
+        <section class="product-layout">
+
+            <!-- Product image -->
+
+            <div class="gallery">
+                <div class="main-image">
+                    {% if product.pr_image %}
+                        <img
+                            src="{{ product.pr_image.url }}"
+                            alt="{{ product.pr_name }}">
+                    {% else %}
+                        <div class="image-placeholder">✳</div>
+                    {% endif %}
+
+                    <span class="image-label">KOYTUS COLLECTION</span>
+                </div>
+
+                <p class="gallery-caption">
+                    Изображение товара из каталога
+                </p>
+            </div>
+
+            <!-- Product information -->
+
+            <div class="product-info">
+
+                <span class="eyebrow">
+                    {{ product.pr_category.category_name }}
+                </span>
+
+                <h1 class="product-title">
+                    {{ product.pr_name }}
+                </h1>
+
+                {% if product.pr_count > 0 %}
+                    <div class="stock-status">
+                        <span class="stock-dot"></span>
+                        В наличии: {{ product.pr_count }} шт.
+                    </div>
+                {% else %}
+                    <div class="stock-status out-of-stock">
+                        <span class="stock-dot"></span>
+                        Временно нет в наличии
+                    </div>
+                {% endif %}
+
+                <div class="price-block">
+                    <div class="price">
+                        {{ product.pr_cost|floatformat:0 }} сум
+                    </div>
+
+                    <p class="price-note">
+                        Итоговая стоимость доставки рассчитывается отдельно
+                    </p>
+                </div>
+
+                <div class="description">
+                    <h2>Описание товара</h2>
+
+                    <p>{{ product.pr_descr }}</p>
+
+                    <a class="category-tag"
+                       href="/category/{{ product.pr_category.id }}/">
+                        {{ product.pr_category.category_name }} →
+                    </a>
+                </div>
+
+                <!-- Quantity and cart form -->
+
+                <form class="purchase-form"
+                      method="post"
+                      action="/cart/add/{{ product.id }}/">
+
+                    {% csrf_token %}
+
+                    <label class="quantity-label" for="quantity">
+                        Количество
+                    </label>
+
+                    <div class="purchase-controls">
+                        <div class="quantity">
+                            <button type="button"
+                                    id="decrease"
+                                    aria-label="Уменьшить количество">
+                                −
+                            </button>
+
+                            <input
+                                type="number"
+                                id="quantity"
+                                name="quantity"
+                                value="1"
+                                min="1"
+                                max="{{ product.pr_count }}"
+                                step="1"
+                                required
+                                {% if product.pr_count < 1 %}disabled{% endif %}>
+
+                            <button type="button"
+                                    id="increase"
+                                    aria-label="Увеличить количество">
+                                +
+                            </button>
+                        </div>
+
+                        <button
+                            class="add-to-cart"
+                            type="submit"
+                            {% if product.pr_count < 1 %}disabled{% endif %}>
+                            {% if product.pr_count > 0 %}
+                                Добавить в корзину <span>→</span>
+                            {% else %}
+                                Нет в наличии
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+
+                <div class="product-benefits">
+
+                    <div class="benefit">
+                        <div class="benefit-icon">♡</div>
+                        <div>
+                            <strong>Деликатный сервис</strong>
+                            <p>Внимание к конфиденциальности заказа.</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit">
+                        <div class="benefit-icon">◇</div>
+                        <div>
+                            <strong>Удобная доставка</strong>
+                            <p>Условия и стоимость уточняются при оформлении.</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit">
+                        <div class="benefit-icon">✓</div>
+                        <div>
+                            <strong>Информация о товаре</strong>
+                            <p>Изучи описание и характеристики перед покупкой.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <div class="back-section">
+            <a class="back-link"
+               href="/category/{{ product.pr_category.id }}/">
+                <span>←</span>
+                Вернуться в категорию
+            </a>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+
+            <div class="footer-top">
+                <div>
+                    <a href="/" class="logo">KOY<span>TUS</span></a>
+
+                    <p class="footer-description">
+                        Магазин товаров для личного комфорта.
+                        Качество, деликатный сервис и внимание к приватности.
+                    </p>
+                </div>
+
+                <nav class="footer-links">
+                    <a href="/">Главная</a>
+                    <a href="/delivery/">Доставка и оплата</a>
+                    <a href="/privacy/">Конфиденциальность</a>
+                    <a href="/contacts/">Контакты</a>
+                </nav>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© {% now "Y" %} KOYTUS. Все права защищены.</span>
+                <span>Только для совершеннолетних — 18+</span>
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        const quantityInput = document.getElementById("quantity");
+        const decreaseButton = document.getElementById("decrease");
+        const increaseButton = document.getElementById("increase");
+
+        function normalizeQuantity() {
+            const min = Number(quantityInput.min) || 1;
+            const max = Number(quantityInput.max) || min;
+
+            let value = Number.parseInt(quantityInput.value, 10);
+
+            if (!Number.isFinite(value)) {
+                value = min;
+            }
+
+            value = Math.max(min, Math.min(value, max));
+            quantityInput.value = value;
+        }
+
+        decreaseButton.addEventListener("click", () => {
+            quantityInput.value =
+                (Number(quantityInput.value) || 1) - 1;
+
+            normalizeQuantity();
+        });
+
+        increaseButton.addEventListener("click", () => {
+            quantityInput.value =
+                (Number(quantityInput.value) || 1) + 1;
+
+            normalizeQuantity();
+        });
+
+        quantityInput.addEventListener("change", normalizeQuantity);
+
+        document.querySelector(".purchase-form")
+            .addEventListener("submit", (event) => {
+                normalizeQuantity();
+
+                if (
+                    !quantityInput.value ||
+                    Number(quantityInput.value) < 1 ||
+                    Number(quantityInput.value) > Number(quantityInput.max)
+                ) {
+                    event.preventDefault();
+                    alert("Проверьте количество товара.");
+                }
+            });
+    </script>
+
+</body>
+</html>

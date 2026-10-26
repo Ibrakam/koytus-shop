@@ -1,0 +1,706 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ category.category_name }} — KOYTUS</title>
+    <meta name="description"
+          content="Каталог {{ category.category_name }} в магазине KOYTUS. Выбирайте товары для личного комфорта.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #faf7f9;
+            --white: #fff;
+            --dark: #211923;
+            --muted: #827784;
+            --accent: #a66b91;
+            --accent-light: #f0e2ec;
+            --border: #eee7ed;
+            --radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .container {
+            width: min(1200px, calc(100% - 40px));
+            margin: auto;
+        }
+
+        /* Header */
+
+        .announcement {
+            background: var(--dark);
+            color: #f8edf5;
+            text-align: center;
+            padding: 9px 15px;
+            font-size: 11px;
+            letter-spacing: .5px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, .95);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-inner {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 27px;
+            font-size: 13px;
+            color: #665968;
+        }
+
+        .nav a:hover,
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
+
+        .cart {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Breadcrumb */
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 28px 0 22px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .breadcrumb .current {
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        /* Category intro */
+
+        .category-hero {
+            position: relative;
+            overflow: hidden;
+            padding: 48px;
+            border-radius: 25px;
+            background:
+                radial-gradient(ellipse at 90% 10%,
+                    rgba(214, 168, 202, .3), transparent 40%),
+                linear-gradient(120deg, #291f2c, #59405a);
+            color: white;
+        }
+
+        .eyebrow {
+            color: #e1b6d4;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .category-hero h1 {
+            position: relative;
+            z-index: 1;
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1.2;
+            letter-spacing: -1.5px;
+            margin: 13px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .category-hero p {
+            position: relative;
+            z-index: 1;
+            max-width: 540px;
+            font-size: 13px;
+            color: #e0d3e0;
+            line-height: 1.9;
+        }
+
+        .hero-decoration {
+            position: absolute;
+            right: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 150px;
+            color: rgba(255, 255, 255, .08);
+            pointer-events: none;
+        }
+
+        /* Catalog toolbar */
+
+        .catalog {
+            padding: 48px 0 80px;
+        }
+
+        .catalog-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .catalog-heading h2 {
+            font-size: 27px;
+            letter-spacing: -.8px;
+        }
+
+        .catalog-heading p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .sort-select {
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            padding: 12px;
+            font-size: 12px;
+            max-width: 190px;
+        }
+
+        /* Products */
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 35px rgba(49, 25, 44, .07);
+        }
+
+        .product-image {
+            position: relative;
+            height: 250px;
+            background: linear-gradient(145deg, #f5edf3, #e9dce8);
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .3s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.04);
+        }
+
+        .placeholder {
+            height: 100%;
+            display: grid;
+            place-items: center;
+            color: #b89ab0;
+            font-size: 46px;
+        }
+
+        .stock {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: white;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .product-info {
+            padding: 17px;
+        }
+
+        .product-category {
+            color: var(--accent);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .product-name {
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 700;
+        }
+
+        .product-description {
+            color: var(--muted);
+            font-size: 11px;
+            min-height: 36px;
+            margin-bottom: 15px;
+        }
+
+        .product-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+            padding-top: 13px;
+        }
+
+        .price {
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .details-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 36px;
+            padding: 8px 12px;
+            background: var(--dark);
+            color: white;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            transition: background .2s;
+        }
+
+        .details-btn:hover {
+            background: var(--accent);
+        }
+
+        /* Empty state */
+
+        .empty {
+            grid-column: 1 / -1;
+            background: white;
+            border: 1px dashed #d9c8d5;
+            border-radius: var(--radius);
+            padding: 65px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 38px;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .empty h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .empty p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            padding: 12px 19px;
+            background: var(--accent);
+            color: white;
+            border-radius: 11px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Footer */
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 38px 0 22px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 25px;
+            padding-bottom: 28px;
+        }
+
+        .footer-description {
+            max-width: 360px;
+            color: #b8aab9;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 12px;
+            color: #ded1df;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #453747;
+            padding-top: 18px;
+            color: #b8aab9;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        @media (max-width: 950px) {
+            .products {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .product-image {
+                height: 220px;
+            }
+
+            .nav {
+                gap: 14px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                width: calc(100% - 28px);
+            }
+
+            .header-inner {
+                min-height: 65px;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .category-hero {
+                padding: 30px 25px;
+            }
+
+            .hero-decoration {
+                right: -10px;
+                font-size: 100px;
+            }
+
+            .catalog {
+                padding: 35px 0 55px;
+            }
+
+            .products {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .product-image {
+                height: 190px;
+            }
+
+            .product-info {
+                padding: 12px;
+            }
+
+            .product-name {
+                font-size: 12px;
+            }
+
+            .price {
+                font-size: 12px;
+            }
+
+            .details-btn {
+                padding: 8px;
+                font-size: 10px;
+            }
+
+            .catalog-heading {
+                align-items: start;
+            }
+
+            .catalog-heading h2 {
+                font-size: 22px;
+            }
+
+            .sort-select {
+                max-width: 135px;
+                padding: 9px 5px;
+                font-size: 10px;
+            }
+
+            .footer-top {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .product-image {
+                height: 155px;
+            }
+
+            .product-bottom {
+                align-items: start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="announcement">
+        18+ · Деликатный сервис · Внимание к вашей приватности
+    </div>
+
+    <header>
+        <div class="container header-inner">
+            <a href="/" class="logo">KOY<span>TUS</span></a>
+
+            <nav class="nav">
+                <a href="/">Главная</a>
+                <a href="/#categories">Категории</a>
+                <a href="/#products">Все товары</a>
+            </nav>
+
+            <a href="/cart/" class="cart">
+                Корзина 🛍
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <nav class="breadcrumb" aria-label="Навигация">
+            <a href="/">Главная</a>
+            <span>/</span>
+            <a href="/#categories">Категории</a>
+            <span>/</span>
+            <span class="current">{{ category.category_name }}</span>
+        </nav>
+
+        <section class="category-hero">
+            <span class="eyebrow">KOYTUS COLLECTION</span>
+
+            <h1>{{ category.category_name }}</h1>
+
+            <p>
+                Открой коллекцию {{ category.category_name|lower }}.
+                Выбирай подходящие товары, изучай характеристики
+                и находи то, что соответствует твоим предпочтениям.
+            </p>
+
+            <div class="hero-decoration">✳</div>
+        </section>
+
+        <section class="catalog">
+            <div class="catalog-heading">
+                <div>
+                    <h2>Товары категории</h2>
+                    <p>Подборка из нашей коллекции</p>
+                </div>
+
+                <select class="sort-select" id="sort-products"
+                        aria-label="Сортировка товаров">
+                    <option value="default">По умолчанию</option>
+                    <option value="price-asc">Сначала дешевле</option>
+                    <option value="price-desc">Сначала дороже</option>
+                    <option value="name">По названию</option>
+                </select>
+            </div>
+
+            <div class="products" id="products-grid">
+
+                {% for i in products %}
+                    <article class="product-card"
+                             data-price="{{ i.pr_cost }}"
+                             data-name="{{ i.pr_name|lower }}">
+
+                        <a href="/product/{{ i.id }}"
+                           aria-label="Подробнее: {{ i.pr_name }}">
+
+                            <div class="product-image">
+                                {% if i.pr_image %}
+                                    <img src="{{ i.pr_image.url }}"
+                                         alt="{{ i.pr_name }}"
+                                         loading="lazy">
+                                {% else %}
+                                    <div class="placeholder">✳</div>
+                                {% endif %}
+
+                                {% if i.pr_count > 0 %}
+                                    <span class="stock">В наличии</span>
+                                {% else %}
+                                    <span class="stock">Нет в наличии</span>
+                                {% endif %}
+                            </div>
+                        </a>
+
+                        <div class="product-info">
+                            <span class="product-category">
+                                {{ category.category_name }}
+                            </span>
+
+                            <h3 class="product-name">
+                                <a href="/product/{{ i.id }}">
+                                    {{ i.pr_name }}
+                                </a>
+                            </h3>
+
+                            <p class="product-description">
+                                {{ i.pr_descr|truncatechars:75 }}
+                            </p>
+
+                            <div class="product-bottom">
+                                <span class="price">
+                                    {{ i.pr_cost|floatformat:0 }} сум
+                                </span>
+
+                                <a class="details-btn"
+                                   href="/product/{{ i.id }}">
+                                    Подробнее →
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                {% empty %}
+                    <div class="empty">
+                        <div class="empty-icon">♡</div>
+                        <h3>Пока здесь пусто</h3>
+                        <p>
+                            В этой категории пока нет товаров.
+                            Загляни в другие коллекции.
+                        </p>
+                        <a href="/" class="primary-btn">
+                            На главную →
+                        </a>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-top">
+                <div>
+                    <a href="/" class="logo">KOY<span>TUS</span></a>
+                    <p class="footer-description">
+                        Товары для личного комфорта.
+                        Качество, деликатный сервис и внимание к приватности.
+                    </p>
+                </div>
+
+                <nav class="footer-links">
+                    <a href="/">Главная</a>
+                    <a href="/delivery/">Доставка и оплата</a>
+                    <a href="/privacy/">Конфиденциальность</a>
+                    <a href="/contacts/">Контакты</a>
+                </nav>
+            </div>
+
+            <div class="footer-bottom">
+                <span>© {% now "Y" %} KOYTUS</span>
+                <span>Только для совершеннолетних — 18+</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const sortSelect = document.getElementById("sort-products");
+        const productsGrid = document.getElementById("products-grid");
+
+        sortSelect.addEventListener("change", function () {
+            const cards = Array.from(
+                productsGrid.querySelectorAll(".product-card")
+            );
+
+            const mode = this.value;
+
+            cards.sort((a, b) => {
+                const priceA = Number(a.dataset.price);
+                const priceB = Number(b.dataset.price);
+                const nameA = a.dataset.name;
+                const nameB = b.dataset.name;
+
+                if (mode === "price-asc") return priceA - priceB;
+                if (mode === "price-desc") return priceB - priceA;
+                if (mode === "name") return nameA.localeCompare(nameB, "ru");
+
+                return 0;
+            });
+
+            cards.forEach(card => productsGrid.appendChild(card));
+        });
+    </script>
+
+</body>
+</html>

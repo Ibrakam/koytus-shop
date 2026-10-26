@@ -38,3 +38,22 @@ TEMPLATES = [
 """
 
 
+
+
+
+
+# class Product():
+#     name = "sdfdsf"
+
+#     def __str__(self) -> str:
+#         return self.name
+
+
+# pr = Product()
+# pr2 = Product()
+# pr3 = Product()
+# pr4 = Product()
+# qwe = [pr, pr2, pr3, pr4]
+# for i in qwe:
+#     print(i)
+# print(qwe)
